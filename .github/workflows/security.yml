@@ -1,0 +1,35 @@
+# Security checks: Semgrep.
+#
+# Action versions were pinned to commit SHAs. The version tag is in the
+# trailing comment. Trivy and dependency review are left out for now because
+# the repository has no dependency manifest. Add them when one appears.
+
+name: Security
+on:
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'  # weekly, Monday morning
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - name: Cache pip packages for Semgrep
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9  # v6.1.0
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-semgrep-1.166.0
+      - name: Semgrep
+        # semgrep scan runs locally with the default ruleset and exits non-zero
+        # on any finding. semgrep ci needs an app token, so it is not used.
+        run: |
+          pip install semgrep==1.166.0
+          semgrep scan --config p/default --error
