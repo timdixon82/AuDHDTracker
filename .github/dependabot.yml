@@ -1,0 +1,17 @@
+# Dependabot configuration.
+# The repository currently has only GitHub Actions workflows, so that is the
+# only ecosystem listed. When a package manifest is added (for example
+# package.json), add a matching weekly block below. Keep npm projects in
+# ordinary folders such as / or /tools, never under .github, because
+# Dependabot does not look for manifests there.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        patterns: ["*"]
